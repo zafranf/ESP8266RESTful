@@ -58,23 +58,23 @@ int ESP8266RESTful::begin(const char *ssid, const char *pass)
 /* GET request */
 int ESP8266RESTful::get(const char *path)
 {
-  return request("GET", path, NULL);
+  return request("GET", path, "");
 }
 
 /* POST request */
-int ESP8266RESTful::post(const char *path, const char *body)
+int ESP8266RESTful::post(const char *path, const String &body)
 {
   return request("POST", path, body);
 }
 
 /* PUT request */
-int ESP8266RESTful::put(const char *path, const char *body)
+int ESP8266RESTful::put(const char *path, const String &body)
 {
   return request("PUT", path, body);
 }
 
 /* PATCH request */
-int ESP8266RESTful::patch(const char *path, const char *body)
+int ESP8266RESTful::patch(const char *path, const String &body)
 {
   return request("PATCH", path, body);
 }
@@ -86,7 +86,7 @@ int ESP8266RESTful::patch(const char *path, const char *body)
 } */
 
 /* DELETE request with body */
-/* int ESP8266RESTful::del(const char *path, const char *body)
+/* int ESP8266RESTful::del(const char *path, const String& body)
 {
   return request("DELETE", path, body);
 } */
@@ -116,7 +116,7 @@ void ESP8266RESTful::setFingerprint(const char *fingerPrint)
 }
 
 /* Do the request */
-int ESP8266RESTful::request(const char *method, const char *path, const char *body)
+int ESP8266RESTful::request(const char *method, const char *path, const String &body)
 {
   String url = host;
   url += path;
@@ -176,8 +176,9 @@ int ESP8266RESTful::request(const char *method, const char *path, const char *bo
     }
     else
     {
+      error_message = http.errorToString(httpCode).c_str();
       LOG_PRINT("[" + http_str + "] Request failed, error: ");
-      LOG_PRINTLN(http.errorToString(httpCode).c_str());
+      LOG_PRINTLN(error_message);
     }
     response = payload;
     statusCode = httpCode;
@@ -201,4 +202,9 @@ int ESP8266RESTful::getStatusCode()
 String ESP8266RESTful::getResponse()
 {
   return response;
+}
+
+String ESP8266RESTful::getErrorMessage()
+{
+  return error_message;
 }

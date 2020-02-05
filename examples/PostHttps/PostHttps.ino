@@ -18,8 +18,9 @@ void setup()
 
 void loop()
 {
-  char *data = "{\"method\":\"post\",\"scheme\":\"https\"}";
-  int statusCode = REST.post("/post", data);
+  String data = "{\"name\":\"zafranf\"}";
+  REST.setHeader("Content-Type", "application/json");
+  REST.post("/post", data);
   Serial.print("Status code from server: ");
   Serial.println(REST.getStatusCode());
   Serial.print("Response body from server: ");

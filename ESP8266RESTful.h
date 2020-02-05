@@ -13,7 +13,7 @@ public:
   int begin(const char *ssid, const char *pass);
 
   /* Do Request */
-  int request(const char *method, const char *path, const char *body);
+  int request(const char *method, const char *path, const String &body);
 
   /* Set a Request Header */
   void setHeader(const char *key, const char *val);
@@ -28,24 +28,27 @@ public:
   int get(const char *path);
 
   /* POST request */
-  int post(const char *path, const char *body);
+  int post(const char *path, const String &body);
 
   /* PUT request */
-  int put(const char *path, const char *body);
+  int put(const char *path, const String &body);
 
   /* PATCH request */
-  int patch(const char *path, const char *body);
+  int patch(const char *path, const String &body);
 
   /* DELETE request */
   int del(const char *path);
   /* DELETE request with body */
-  int del(const char *path, const char *body);
+  int del(const char *path, const String &body);
 
   /* Get response status code */
   int getStatusCode();
 
   /* Get response payload */
   String getResponse();
+
+  /* Get response payload */
+  String getErrorMessage();
 
 private:
   WiFiClient client;
@@ -55,4 +58,5 @@ private:
   bool is_secure;
   int statusCode;
   String response;
+  String error_message;
 };
