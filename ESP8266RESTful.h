@@ -24,9 +24,6 @@ public:
   /* Set the fingerprint of SSL certificate to use secure connection */
   void setFingerprint(const char *fingerPrint);
 
-  /* Show debug print */
-  void showDebug();
-
   /* GET request */
   int get(const char *path);
 
@@ -56,7 +53,6 @@ private:
   HTTPClient http;
   const char *host;
   bool is_secure;
-  bool show_debug = false;
   int statusCode;
   String response;
 };

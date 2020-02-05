@@ -1,6 +1,7 @@
 #include "ESP8266RESTful.h"
 
-// #define SHOW_LOG
+/* comment to hide log */
+#define SHOW_LOG
 
 #ifdef SHOW_LOG
 #define LOG_PRINT(string) (Serial.print(string))
@@ -112,12 +113,6 @@ void ESP8266RESTful::setFingerprint(const char *fingerPrint)
   {
     client_s.setFingerprint(fingerPrint);
   }
-}
-
-/* Show the debug print */
-void ESP8266RESTful::showDebug()
-{
-#define HTTP_DEBUG
 }
 
 /* Do the request */
