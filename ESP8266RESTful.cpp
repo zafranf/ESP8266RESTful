@@ -1,6 +1,6 @@
 #include "ESP8266RESTful.h"
 
-#define SHOW_LOG
+// #define SHOW_LOG
 
 #ifdef SHOW_LOG
 #define LOG_PRINT(string) (Serial.print(string))
@@ -40,7 +40,7 @@ int ESP8266RESTful::begin(const char *ssid, const char *pass)
     countDelay++;
     if (countDelay > 10)
     {
-      LOG_PRINT();
+      LOG_PRINTLN();
       countDelay = 0;
     }
   }
