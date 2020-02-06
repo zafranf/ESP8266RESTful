@@ -11,7 +11,7 @@ void setup()
 {
   Serial.println();
   Serial.begin(9600);
-  REST.begin("ssid", "password");
+  REST.connect("ssid", "password");
 }
 
 void loop()

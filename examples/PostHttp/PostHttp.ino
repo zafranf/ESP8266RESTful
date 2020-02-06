@@ -11,12 +11,12 @@ void setup()
 {
   Serial.println();
   Serial.begin(9600);
-  REST.begin("ssid", "password");
+  REST.connect("ssid", "password");
 }
 
 void loop()
 {
-  String data = "{\"name\":\"zafranf\"}";
+  String data = "{\"package\":\"ESP8266RESTful\"}";
   REST.setHeader("Content-Type", "application/json");
   REST.post("/post", data);
   Serial.print("Status code from server: ");

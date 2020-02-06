@@ -7,15 +7,16 @@ class ESP8266RESTful
 
 public:
   /* Initialize host */
+  ESP8266RESTful();
   ESP8266RESTful(const char *host);
 
-  /* Wifi Setup */
-  int begin(const char *ssid, const char *pass);
+  /* Wifi setup */
+  int connect(const char *ssid, const char *pass);
 
-  /* Do Request */
-  int request(const char *method, const char *path, const String &body);
+  /* Set a host */
+  void setHost(const char *host);
 
-  /* Set a Request Header */
+  /* Set a request header */
   void setHeader(const char *key, const char *val);
 
   /* Set to use a secure connection */
@@ -23,6 +24,18 @@ public:
 
   /* Set the fingerprint of SSL certificate to use secure connection */
   void setFingerprint(const char *fingerPrint);
+
+  /* Get response status code */
+  int getStatusCode();
+
+  /* Get response payload */
+  String getResponse();
+
+  /* Get response payload */
+  String getErrorMessage();
+
+  /* Do Request */
+  int request(const char *method, const char *path, const String &body);
 
   /* GET request */
   int get(const char *path);
@@ -40,15 +53,6 @@ public:
   int del(const char *path);
   /* DELETE request with body */
   int del(const char *path, const String &body);
-
-  /* Get response status code */
-  int getStatusCode();
-
-  /* Get response payload */
-  String getResponse();
-
-  /* Get response payload */
-  String getErrorMessage();
 
 private:
   WiFiClient client;

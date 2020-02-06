@@ -13,13 +13,18 @@
 #define LOG_PRINTLN(string)
 #endif
 
+ESP8266RESTful::ESP8266RESTful()
+{
+  is_secure = false;
+}
+
 ESP8266RESTful::ESP8266RESTful(const char *_host)
 {
   host = _host;
   is_secure = false;
 }
 
-int ESP8266RESTful::begin(const char *ssid, const char *pass)
+int ESP8266RESTful::connect(const char *ssid, const char *pass)
 {
   WiFi.persistent(false);
   WiFi.disconnect(true);
@@ -55,41 +60,11 @@ int ESP8266RESTful::begin(const char *ssid, const char *pass)
   return WiFi.status();
 }
 
-/* GET request */
-int ESP8266RESTful::get(const char *path)
+/* Set host */
+void ESP8266RESTful::setHost(const char *_host)
 {
-  return request("GET", path, "");
+  host = _host;
 }
-
-/* POST request */
-int ESP8266RESTful::post(const char *path, const String &body)
-{
-  return request("POST", path, body);
-}
-
-/* PUT request */
-int ESP8266RESTful::put(const char *path, const String &body)
-{
-  return request("PUT", path, body);
-}
-
-/* PATCH request */
-int ESP8266RESTful::patch(const char *path, const String &body)
-{
-  return request("PATCH", path, body);
-}
-
-/* DELETE request */
-/* int ESP8266RESTful::del(const char *path)
-{
-  return del(path, NULL);
-} */
-
-/* DELETE request with body */
-/* int ESP8266RESTful::del(const char *path, const String& body)
-{
-  return request("DELETE", path, body);
-} */
 
 /* Set request header */
 void ESP8266RESTful::setHeader(const char *key, const char *val)
@@ -113,6 +88,23 @@ void ESP8266RESTful::setFingerprint(const char *fingerPrint)
   {
     client_s.setFingerprint(fingerPrint);
   }
+}
+
+/* Get response status code */
+int ESP8266RESTful::getStatusCode()
+{
+  return statusCode;
+}
+
+/* Get response payload */
+String ESP8266RESTful::getResponse()
+{
+  return response;
+}
+
+String ESP8266RESTful::getErrorMessage()
+{
+  return error_message;
 }
 
 /* Do the request */
@@ -153,11 +145,12 @@ int ESP8266RESTful::request(const char *method, const char *path, const String &
       httpCode = http.PATCH(body);
     }
     /* DELETE request */
-    /* else if (method == "DELETE")
+    else if (method == "DELETE")
     {
       LOG_PRINTLN("[" + http_str + "] DELETE data from " + url);
-      httpCode = http.DELETE(body);
-    } */
+      // httpCode = http.DELETE(body);
+      httpCode = http.sendRequest("DELETE", body);
+    }
 
     // httpCode will be negative on error
     if (httpCode > 0)
@@ -192,19 +185,38 @@ int ESP8266RESTful::request(const char *method, const char *path, const String &
   return httpCode;
 }
 
-/* Get response status code */
-int ESP8266RESTful::getStatusCode()
+/* GET request */
+int ESP8266RESTful::get(const char *path)
 {
-  return statusCode;
+  return request("GET", path, "");
 }
 
-/* Get response payload */
-String ESP8266RESTful::getResponse()
+/* POST request */
+int ESP8266RESTful::post(const char *path, const String &body)
 {
-  return response;
+  return request("POST", path, body);
 }
 
-String ESP8266RESTful::getErrorMessage()
+/* PUT request */
+int ESP8266RESTful::put(const char *path, const String &body)
 {
-  return error_message;
+  return request("PUT", path, body);
 }
+
+/* PATCH request */
+int ESP8266RESTful::patch(const char *path, const String &body)
+{
+  return request("PATCH", path, body);
+}
+
+/* DELETE request */
+/* int ESP8266RESTful::del(const char *path)
+{
+  return del(path, NULL);
+} */
+
+/* DELETE request with body */
+/* int ESP8266RESTful::del(const char *path, const String& body)
+{
+  return request("DELETE", path, body);
+} */

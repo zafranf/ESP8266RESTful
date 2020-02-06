@@ -11,14 +11,14 @@ void setup()
 {
   Serial.println();
   Serial.begin(9600);
-  REST.begin("ssid", "password");
+  REST.connect("ssid", "password");
   REST.setSecureConnection(true);
   REST.setFingerprint("C7 D1 21 64 EB 06 84 56 B9 BA 19 EB 69 74 53 76 1A AE BD 99");
 }
 
 void loop()
 {
-  String data = "{\"name\":\"zafranf\"}";
+  String data = "{\"package\":\"ESP8266RESTful\"}";
   REST.setHeader("Content-Type", "application/json");
   REST.post("/post", data);
   Serial.print("Status code from server: ");
