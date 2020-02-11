@@ -54,13 +54,28 @@ public:
   /* DELETE request with body */
   int del(const char *path, const String &body);
 
+  /* ESP8266HTTPClient */
+  // void setReuse(bool reuse); /// keep-alive
+  // void setUserAgent(const String& userAgent);
+  // void setAuthorization(const char * user, const char * password);
+  // void setAuthorization(const char * auth);
+  // void setTimeout(uint16_t timeout);
+  // void setFollowRedirects(bool follow);
+  // void setRedirectLimit(uint16_t limit); // max redirects to follow for a single request
+  // bool setURL(const String& url); // handy for handling redirects
+  // void useHTTP10(bool usehttp10 = true);
+
 private:
   WiFiClient client;
   WiFiClientSecure client_s;
   HTTPClient http;
   const char *host;
+  const char *header_keys[16];
+  const char *header_values[16];
+  int header_num;
   bool is_secure;
   int statusCode;
   String response;
   String error_message;
+  void attachHeaders();
 };

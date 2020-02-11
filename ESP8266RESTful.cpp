@@ -15,13 +15,15 @@
 
 ESP8266RESTful::ESP8266RESTful()
 {
-  is_secure = false;
+  header_num = 0;
+  setSecureConnection(false);
 }
 
 ESP8266RESTful::ESP8266RESTful(const char *_host)
 {
   host = _host;
-  is_secure = false;
+  header_num = 0;
+  setSecureConnection(false);
 }
 
 int ESP8266RESTful::connect(const char *ssid, const char *pass)
@@ -69,7 +71,18 @@ void ESP8266RESTful::setHost(const char *_host)
 /* Set request header */
 void ESP8266RESTful::setHeader(const char *key, const char *val)
 {
-  http.addHeader(key, val);
+  header_keys[header_num] = key;
+  header_values[header_num] = val;
+  header_num++;
+}
+
+/* Attach request header */
+void ESP8266RESTful::attachHeaders()
+{
+  for (int i = 0; i < header_num; i++)
+  {
+    http.addHeader(header_keys[i], header_values[i]);
+  }
 }
 
 /* Set use secure connection */
@@ -84,11 +97,47 @@ void ESP8266RESTful::setSecureConnection(bool secure)
  */
 void ESP8266RESTful::setFingerprint(const char *fingerPrint)
 {
-  if (is_secure)
-  {
+  if (is_secure) {
     client_s.setFingerprint(fingerPrint);
   }
 }
+
+/* void ESP8266RESTful::setReuse(bool reuse) 
+{
+  http.setReuse(reuse);
+}
+void ESP8266RESTful::setUserAgent(const String& userAgent) 
+{
+  http.setUserAgent(userAgent);
+}
+void ESP8266RESTful::setAuthorization(const char * user, const char * password) 
+{
+  http.setAuthorization(user, password);
+}
+void ESP8266RESTful::setAuthorization(const char * user) 
+{
+  http.setAuthorization(user);
+}
+void ESP8266RESTful::setTimeout(uint16_t timeout) 
+{
+  http.setTimeout(timeout);
+}
+void ESP8266RESTful::setFollowRedirects(bool follow) 
+{
+  http.setFollowRedirects(follow);
+}
+void ESP8266RESTful::setRedirectLimit(uint16_t limit) 
+{
+  http.setRedirectLimit(limit);
+}
+bool ESP8266RESTful::setURL(const String& url) 
+{
+  return http.setURL(url);
+}
+void ESP8266RESTful::useHTTP10(bool useHTTP10) 
+{
+  http.useHTTP10(useHTTP10);
+} */
 
 /* Get response status code */
 int ESP8266RESTful::getStatusCode()
@@ -120,6 +169,13 @@ int ESP8266RESTful::request(const char *method, const char *path, const String &
   LOG_PRINTLN("[" + http_str + "] begin...");
   if (http.begin(is_secure ? client_s : client, url))
   {
+    /* attach header values */
+    if (header_num == 0) {
+      http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+    } else {
+      attachHeaders();
+    }
+
     /* GET request */
     if (method == "GET")
     {
@@ -165,6 +221,8 @@ int ESP8266RESTful::request(const char *method, const char *path, const String &
         payload = http.getString();
         LOG_PRINTLN("Response payload:");
         LOG_PRINTLN(payload);
+      } else {
+        payload = http.getString();
       }
     }
     else
@@ -209,14 +267,8 @@ int ESP8266RESTful::patch(const char *path, const String &body)
   return request("PATCH", path, body);
 }
 
-/* DELETE request */
-/* int ESP8266RESTful::del(const char *path)
-{
-  return del(path, NULL);
-} */
-
 /* DELETE request with body */
-/* int ESP8266RESTful::del(const char *path, const String& body)
+int ESP8266RESTful::del(const char *path, const String &body)
 {
   return request("DELETE", path, body);
-} */
+}
