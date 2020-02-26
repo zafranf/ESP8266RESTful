@@ -97,47 +97,59 @@ void ESP8266RESTful::setSecureConnection(bool secure)
  */
 void ESP8266RESTful::setFingerprint(const char *fingerPrint)
 {
-  if (is_secure) {
+  if (is_secure)
+  {
     client_s.setFingerprint(fingerPrint);
   }
 }
 
-/* void ESP8266RESTful::setReuse(bool reuse) 
+/* ESP8266HTTPClient */
+void ESP8266RESTful::setReuse(bool reuse)
 {
-  http.setReuse(reuse);
+  // http.setReuse(reuse);
+  _reUse = reuse;
 }
-void ESP8266RESTful::setUserAgent(const String& userAgent) 
+void ESP8266RESTful::setUserAgent(const String &userAgent)
 {
-  http.setUserAgent(userAgent);
+  // http.setUserAgent(userAgent);
+  _UserAgent = userAgent;
 }
-void ESP8266RESTful::setAuthorization(const char * user, const char * password) 
+void ESP8266RESTful::setAuthorization(const char *user, const char *password)
 {
-  http.setAuthorization(user, password);
+  // http.setAuthorization(user, password);
+  _user = user;
+  _password = password;
 }
-void ESP8266RESTful::setAuthorization(const char * user) 
+void ESP8266RESTful::setAuthorization(const char *auth)
 {
-  http.setAuthorization(user);
+  // http.setAuthorization(auth);
+  _auth = auth;
 }
-void ESP8266RESTful::setTimeout(uint16_t timeout) 
+void ESP8266RESTful::setTimeout(uint16_t timeout)
 {
-  http.setTimeout(timeout);
+  // http.setTimeout(timeout);
+  _timeout = timeout;
 }
-void ESP8266RESTful::setFollowRedirects(bool follow) 
+void ESP8266RESTful::setFollowRedirects(bool follow)
 {
-  http.setFollowRedirects(follow);
+  // http.setFollowRedirects(follow);
+  _follow = follow;
 }
-void ESP8266RESTful::setRedirectLimit(uint16_t limit) 
+void ESP8266RESTful::setRedirectLimit(uint16_t limit)
 {
-  http.setRedirectLimit(limit);
+  // http.setRedirectLimit(limit);
+  _limit = limit;
 }
-bool ESP8266RESTful::setURL(const String& url) 
+bool ESP8266RESTful::setURL(const String &url)
 {
-  return http.setURL(url);
+  // return http.setURL(url);
+  _url = url;
 }
-void ESP8266RESTful::useHTTP10(bool useHTTP10) 
+void ESP8266RESTful::useHTTP10(bool useHTTP10)
 {
-  http.useHTTP10(useHTTP10);
-} */
+  // http.useHTTP10(useHTTP10);
+  _useHttp10 = useHTTP10;
+}
 
 /* Get response status code */
 int ESP8266RESTful::getStatusCode()
@@ -157,7 +169,7 @@ String ESP8266RESTful::getErrorMessage()
 }
 
 /* Do the request */
-int ESP8266RESTful::request(const char *method, const char *path, const String &body)
+int ESP8266RESTful::request(const char *method, String path, const String &body)
 {
   String url = host;
   url += path;
@@ -169,10 +181,50 @@ int ESP8266RESTful::request(const char *method, const char *path, const String &
   LOG_PRINTLN("[" + http_str + "] begin...");
   if (http.begin(is_secure ? client_s : client, url))
   {
+    if (_reUse != NULL)
+    {
+      http.setReuse(_reUse);
+    }
+    if (_UserAgent != NULL)
+    {
+      http.setUserAgent(_UserAgent);
+    }
+    if (_user != NULL && _password != NULL)
+    {
+      http.setAuthorization(_user, _password);
+    }
+    if (_auth != NULL)
+    {
+      http.setAuthorization(_auth);
+    }
+    if (_timeout != NULL)
+    {
+      http.setTimeout(_timeout);
+    }
+    if (_follow != NULL)
+    {
+      http.setFollowRedirects(_follow);
+    }
+    if (_limit != NULL)
+    {
+      http.setRedirectLimit(_limit);
+    }
+    if (_url != NULL)
+    {
+      http.setURL(_url);
+    }
+    if (_useHttp10 != NULL)
+    {
+      http.useHTTP10(_useHttp10);
+    }
+
     /* attach header values */
-    if (header_num == 0) {
+    if (header_num == 0 && method != "GET")
+    {
       http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-    } else {
+    }
+    else
+    {
       attachHeaders();
     }
 
@@ -221,7 +273,9 @@ int ESP8266RESTful::request(const char *method, const char *path, const String &
         payload = http.getString();
         LOG_PRINTLN("Response payload:");
         LOG_PRINTLN(payload);
-      } else {
+      }
+      else
+      {
         payload = http.getString();
       }
     }
@@ -244,31 +298,31 @@ int ESP8266RESTful::request(const char *method, const char *path, const String &
 }
 
 /* GET request */
-int ESP8266RESTful::get(const char *path)
+int ESP8266RESTful::get(String path)
 {
   return request("GET", path, "");
 }
 
 /* POST request */
-int ESP8266RESTful::post(const char *path, const String &body)
+int ESP8266RESTful::post(String path, const String &body)
 {
   return request("POST", path, body);
 }
 
 /* PUT request */
-int ESP8266RESTful::put(const char *path, const String &body)
+int ESP8266RESTful::put(String path, const String &body)
 {
   return request("PUT", path, body);
 }
 
 /* PATCH request */
-int ESP8266RESTful::patch(const char *path, const String &body)
+int ESP8266RESTful::patch(String path, const String &body)
 {
   return request("PATCH", path, body);
 }
 
 /* DELETE request with body */
-int ESP8266RESTful::del(const char *path, const String &body)
+int ESP8266RESTful::del(String path, const String &body)
 {
   return request("DELETE", path, body);
 }
